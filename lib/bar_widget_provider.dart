@@ -34,6 +34,9 @@ class BarWidgetProvider extends ChangeNotifier {
       case 2:
         _selectionSort();
         break;
+      case 3:
+        _mergeSort();
+        break;
       default:
         _bubbleSortAlgo();
     }
@@ -43,15 +46,15 @@ class BarWidgetProvider extends ChangeNotifier {
   void updateWidgetCount(int count) {
     if (count <= 40) {
       _speed = const Duration(
-        milliseconds: 20,
+        milliseconds: 80,
       );
     } else if (count >= 40 && count <= 100) {
       _speed = const Duration(
-        milliseconds: 5,
+        milliseconds: 60,
       );
     } else if (count > 100) {
       _speed = const Duration(
-        milliseconds: 1,
+        milliseconds: 100,
       );
     }
     widgetCounts = count;
@@ -179,5 +182,53 @@ class BarWidgetProvider extends ChangeNotifier {
     await Future.delayed(_speed);
     isAlgoRunning = false;
     notifyListeners();
+  }
+
+  int _left = -1;
+  int _right = -1;
+
+  void _mergeSort() async {
+    isAlgoRunning = true;
+    final List copyarr = List.from(myWidgets);
+    await mergeSort(myWidgets, 0, myWidgets.length - 1, copyarr);
+    isAlgoRunning = false;
+    notifyListeners();
+  }
+
+  Future mergeSort(List main, int start, int end, List copy) async {
+    if (start == end) {
+      return;
+    }
+
+    final int mid = (start + end) ~/ 2;
+    await mergeSort(copy, start, mid, main);
+    await mergeSort(copy, mid + 1, end, main);
+    await mergeArr(main, start, mid, end, copy);
+  }
+
+  Future mergeArr(List main, int start, int mid, int end, List copy) async {
+    _left = start;
+    _right = mid + 1;
+    int counter = start;
+    notifyListeners();
+    while (_left <= mid && _right <= end) {
+      if (copy[_left]["height"] < copy[_right]["height"]) {
+        main[counter++] = copy[_left++];
+      } else {
+        main[counter++] = copy[_right++];
+      }
+      notifyListeners();
+      await Future.delayed(_speed);
+    }
+    while (_left <= mid) {
+      main[counter++] = copy[_left++];
+      notifyListeners();
+      await Future.delayed(_speed);
+    }
+    while (_right <= end) {
+      main[counter++] = copy[_right++];
+      notifyListeners();
+      await Future.delayed(_speed);
+    }
   }
 }

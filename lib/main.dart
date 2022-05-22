@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sorting_visualizer_flutter/constant_colors.dart';
 import 'package:sorting_visualizer_flutter/global_provider.dart';
 import 'package:sorting_visualizer_flutter/my_drawer.dart';
 import 'package:sorting_visualizer_flutter/slider_counter.dart';
@@ -38,6 +39,7 @@ class MyHomePage extends StatelessWidget {
           final barWidgetProvider = ref.watch(barWidgetNotifierProvider);
           log("REFRESHED");
           return Scaffold(
+            backgroundColor: ConstantColors.blackColor,
             bottomNavigationBar: const SizedBox(
               height: 100,
               child: SliderCounter(),

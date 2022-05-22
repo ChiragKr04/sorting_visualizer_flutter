@@ -11,6 +11,7 @@ class MyDrawer extends StatelessWidget {
       "Bubble Sort",
       "Insertion Sort",
       "Selection Sort",
+      "Merge Sort",
     ];
 
     return Consumer(builder: (context, ref, child) {
