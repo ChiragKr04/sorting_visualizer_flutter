@@ -1,12 +1,14 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sorting_visualizer_flutter/constant_colors.dart';
 import 'package:sorting_visualizer_flutter/global_provider.dart';
 import 'package:sorting_visualizer_flutter/my_drawer.dart';
+import 'package:sorting_visualizer_flutter/pseudo_code_card.dart';
 import 'package:sorting_visualizer_flutter/slider_counter.dart';
+
+import 'time_complexity_card.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -56,12 +58,18 @@ class MyHomePage extends StatelessWidget {
               ),
             ),
             appBar: AppBar(
+              centerTitle: true,
+              title: Text(
+                ref
+                    .watch(barWidgetNotifierProvider)
+                    .getCurrentAlgoName()["name"],
+              ),
               actions: [
                 IconButton(
                   onPressed: () {
-                    ref
-                        .read(barWidgetNotifierProvider.notifier)
-                        .updateBarData(constraints.maxWidth);
+                    ref.read(barWidgetNotifierProvider.notifier).updateBarData(
+                          MediaQuery.of(context).size.width * 0.60,
+                        );
                   },
                   icon: const Icon(
                     Icons.refresh,
@@ -72,38 +80,52 @@ class MyHomePage extends StatelessWidget {
             drawer: const MyDrawer(),
             body: Column(
               children: [
-                RotatedBox(
-                  quarterTurns: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      for (int i = 0;
-                          i < barWidgetProvider.myWidgets.length;
-                          i++)
-                        ColoredBox(
-                          color: barWidgetProvider.myWidgets[i]["color"],
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 2,
+                Stack(
+                  children: [
+                    RotatedBox(
+                      quarterTurns: 0,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (int i = 0;
+                              i < barWidgetProvider.myWidgets.length;
+                              i++)
+                            AnimatedContainer(
+                              duration: const Duration(seconds: 1),
+                              curve: Curves.easeInOut,
+                              child: ColoredBox(
+                                color: barWidgetProvider.myWidgets[i]["color"],
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: barWidgetProvider.myWidgets[i]
+                                      ["widget"] as Widget,
+                                ),
                               ),
                             ),
-                            child: barWidgetProvider.myWidgets[i]["widget"]
-                                as Widget,
-                          ),
-                        ),
-                    ],
-                  ),
+                        ],
+                      ),
+                    ),
+                    TimeComplexityCard(
+                      width: constraints.maxWidth * 0.20,
+                    ),
+                    PseudoCodeCard(
+                      width: constraints.maxWidth * 0.20,
+                    ),
+                  ],
                 ),
                 Expanded(
                   child: Center(
                     child: Icon(
                       Icons.radio_button_unchecked_rounded,
                       color: ref.watch(barWidgetNotifierProvider).isAlgoRunning
-                          ? Colors.red
-                          : Colors.green,
+                          ? Colors.green
+                          : Colors.red,
                     ),
                   ),
                 ),

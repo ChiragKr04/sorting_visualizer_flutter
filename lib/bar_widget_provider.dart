@@ -2,6 +2,7 @@ import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:sorting_visualizer_flutter/algo_constants.dart';
 
 class BarWidgetProvider extends ChangeNotifier {
   var myWidgets = [];
@@ -13,7 +14,7 @@ class BarWidgetProvider extends ChangeNotifier {
   int _widgetCounter = 0;
   bool isAlgoRunning = false;
   Duration _speed = const Duration(
-    milliseconds: 20,
+    seconds: 2,
   );
 
   int selectedAlgo = 0;
@@ -21,6 +22,24 @@ class BarWidgetProvider extends ChangeNotifier {
   void updateAlgoName(int idx) {
     selectedAlgo = idx;
     notifyListeners();
+  }
+
+  final List<String> _algoNames = AlgoConstants.algoNames;
+
+  final List<Map> _algoData = AlgoConstants.algoData;
+
+  int _pseudoCounter = 0;
+
+  int get pseudoCounter => _pseudoCounter;
+
+  final List _pseudoCodeData = AlgoConstants.pseudoCodeData;
+
+  List getPseudoData() {
+    return _pseudoCodeData[selectedAlgo];
+  }
+
+  Map getCurrentAlgoName() {
+    return _algoData[selectedAlgo];
   }
 
   void algoRunner() {
@@ -37,6 +56,9 @@ class BarWidgetProvider extends ChangeNotifier {
       case 3:
         _mergeSort();
         break;
+      case 4:
+        _quickSort();
+        break;
       default:
         _bubbleSortAlgo();
     }
@@ -46,7 +68,7 @@ class BarWidgetProvider extends ChangeNotifier {
   void updateWidgetCount(int count) {
     if (count <= 40) {
       _speed = const Duration(
-        milliseconds: 80,
+        seconds: 1,
       );
     } else if (count >= 40 && count <= 100) {
       _speed = const Duration(
@@ -67,7 +89,7 @@ class BarWidgetProvider extends ChangeNotifier {
     _widgetCounter = 0;
     while (_widgetCounter < widgetCounts) {
       dev.log(_widgetCounter.toString());
-      await Future.delayed(_speed);
+      await Future.delayed(const Duration(milliseconds: 50));
       _widgetCounter++;
       double height = Random().nextInt(screenWidth ~/ 2) + 20;
       dev.log("height $height");
@@ -78,14 +100,16 @@ class BarWidgetProvider extends ChangeNotifier {
           width: (screenWidth.toInt()) / widgetCounts,
           child: Align(
             alignment: Alignment.topCenter,
-            child: Text(
-              height.toInt().toString(),
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-                fontSize: 14,
-              ),
-            ),
+            child: widgetCounts < 40
+                ? Text(
+                    height.toInt().toString(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  )
+                : const Offstage(),
           ),
         ),
         "color": Colors.red,
@@ -103,9 +127,25 @@ class BarWidgetProvider extends ChangeNotifier {
     int swapCounter = 0;
     while (!needSort) {
       needSort = true;
+      _pseudoCounter = 1;
+      notifyListeners();
+      await Future.delayed(_speed);
+
+      _pseudoCounter = 2;
+      notifyListeners();
+      await Future.delayed(_speed);
       for (int i = 0; i < alen - swapCounter; i++) {
         myWidgets[i]["color"] = Colors.green;
+        myWidgets[i + 1]["color"] = Colors.green;
+        _pseudoCounter = 3;
+        notifyListeners();
+        await Future.delayed(_speed);
+
         if (myWidgets[i]["height"] > myWidgets[i + 1]["height"]) {
+          _pseudoCounter = 4;
+          notifyListeners();
+          await Future.delayed(_speed);
+
           // changing widgets
           Widget temp = myWidgets[i + 1]["widget"];
           myWidgets[i + 1]["widget"] = myWidgets[i]["widget"];
@@ -116,17 +156,25 @@ class BarWidgetProvider extends ChangeNotifier {
           myWidgets[i]["height"] = tempHeight;
           needSort = false;
         }
-        await Future.delayed(_speed);
+        // await Future.delayed(_speed);
         myWidgets[i]["color"] = Colors.red;
         notifyListeners();
       }
+      _pseudoCounter = 5;
       swapCounter += 1;
-      for (int i = 0; i < alen; i++) {
-        dev.log("myWidgets ${myWidgets[i]["widget"].toString()} ");
-      }
       notifyListeners();
+      await Future.delayed(_speed);
+
+      _pseudoCounter = 6;
+      notifyListeners();
+      await Future.delayed(_speed);
     }
     isAlgoRunning = false;
+    for (int i = 0; i <= alen - swapCounter; i++) {
+      if (myWidgets[i]["color"] == Colors.green) break;
+      myWidgets[i]["color"] = Colors.green;
+    }
+    _pseudoCounter = 7;
     notifyListeners();
   }
 
@@ -137,8 +185,14 @@ class BarWidgetProvider extends ChangeNotifier {
       int j = i;
       while (j > 0 && myWidgets[j]["height"] < myWidgets[j - 1]["height"]) {
         Widget temp = myWidgets[j - 1]["widget"];
+        myWidgets[j - 1]["color"] = Colors.deepPurple;
+        myWidgets[j]["color"] = Colors.orange;
+        notifyListeners();
+        await Future.delayed(const Duration(milliseconds: 1));
         myWidgets[j - 1]["widget"] = myWidgets[j]["widget"];
         myWidgets[j]["widget"] = temp;
+        myWidgets[j]["color"] = Colors.green;
+        myWidgets[j - 1]["color"] = Colors.green;
         // changing height
         double tempHeight = myWidgets[j - 1]["height"];
         myWidgets[j - 1]["height"] = myWidgets[j]["height"];
@@ -149,6 +203,9 @@ class BarWidgetProvider extends ChangeNotifier {
       }
     }
     await Future.delayed(_speed);
+    for (int i = 0; i < alen; i++) {
+      myWidgets[i]["color"] = Colors.green;
+    }
     isAlgoRunning = false;
     notifyListeners();
   }
@@ -190,23 +247,23 @@ class BarWidgetProvider extends ChangeNotifier {
   void _mergeSort() async {
     isAlgoRunning = true;
     final List copyarr = List.from(myWidgets);
-    await mergeSort(myWidgets, 0, myWidgets.length - 1, copyarr);
+    await _merging(myWidgets, 0, myWidgets.length - 1, copyarr);
     isAlgoRunning = false;
     notifyListeners();
   }
 
-  Future mergeSort(List main, int start, int end, List copy) async {
+  Future _merging(List main, int start, int end, List copy) async {
     if (start == end) {
       return;
     }
 
     final int mid = (start + end) ~/ 2;
-    await mergeSort(copy, start, mid, main);
-    await mergeSort(copy, mid + 1, end, main);
-    await mergeArr(main, start, mid, end, copy);
+    await _merging(copy, start, mid, main);
+    await _merging(copy, mid + 1, end, main);
+    await _mergeArr(main, start, mid, end, copy);
   }
 
-  Future mergeArr(List main, int start, int mid, int end, List copy) async {
+  Future _mergeArr(List main, int start, int mid, int end, List copy) async {
     _left = start;
     _right = mid + 1;
     int counter = start;
@@ -230,5 +287,48 @@ class BarWidgetProvider extends ChangeNotifier {
       notifyListeners();
       await Future.delayed(_speed);
     }
+  }
+
+  void _quickSort() async {
+    isAlgoRunning = true;
+    await _quickSortAlgo(myWidgets, 0, myWidgets.length - 1);
+    isAlgoRunning = false;
+    notifyListeners();
+  }
+
+  Future<void> _quickSortAlgo(List arr, int low, int high) async {
+    if (low >= high) {
+      return;
+    }
+
+    int s = low;
+    int e = high;
+
+    int mid = s + (e - s) ~/ 2;
+
+    int pivot = arr[mid]["height"];
+
+    while (s <= e) {
+      while (arr[s]["height"] < pivot) {
+        s++;
+      }
+      while (arr[e]["height"] > pivot) {
+        e--;
+      }
+      if (s <= e) {
+        var temp = arr[s];
+        arr[s] = arr[e];
+        arr[e] = temp;
+        notifyListeners();
+        await Future.delayed(_speed);
+        s++;
+        e--;
+      }
+      notifyListeners();
+      await Future.delayed(_speed);
+    }
+
+    _quickSortAlgo(arr, low, e);
+    _quickSortAlgo(arr, s, high);
   }
 }
