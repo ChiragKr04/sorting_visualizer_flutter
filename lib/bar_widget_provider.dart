@@ -76,7 +76,7 @@ class BarWidgetProvider extends ChangeNotifier {
       );
     } else if (count > 100) {
       _speed = const Duration(
-        milliseconds: 100,
+        milliseconds: 10,
       );
     }
     widgetCounts = count;
@@ -258,8 +258,11 @@ class BarWidgetProvider extends ChangeNotifier {
     }
 
     final int mid = (start + end) ~/ 2;
+    await Future.delayed(_speed);
     await _merging(copy, start, mid, main);
+    await Future.delayed(_speed);
     await _merging(copy, mid + 1, end, main);
+    await Future.delayed(_speed);
     await _mergeArr(main, start, mid, end, copy);
   }
 
