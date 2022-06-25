@@ -48,7 +48,7 @@ class AlgoConstants {
     ],
     [
       "for each (unsorted) partition",
-      "set first element as pivot",
+      "Find mid and set mid as pivot",
       "    storeIndex = pivotIndex+1",
       "    for i = pivotIndex+1 to rightmostIndex",
       "        if ((a[i] < a[pivot]) or (equal but 50% lucky))",

@@ -25,8 +25,6 @@ class BarWidgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  final List<String> _algoNames = AlgoConstants.algoNames;
-
   final List<Map> _algoData = AlgoConstants.algoData;
 
   int _pseudoCounter = 0;
@@ -231,7 +229,7 @@ class BarWidgetProvider extends ChangeNotifier {
     int n = myWidgets.length;
     int currSmall = 0;
     for (int i = 0; i < n - 1; i++) {
-      int min_idx = i;
+      int minIdx = i;
       _pseudoCounter = 1;
       notifyListeners();
       await Future.delayed(_speed);
@@ -242,10 +240,10 @@ class BarWidgetProvider extends ChangeNotifier {
         _pseudoCounter = 3;
         notifyListeners();
         // await Future.delayed(_speed);
-        if (myWidgets[j]["height"] < myWidgets[min_idx]["height"]) {
+        if (myWidgets[j]["height"] < myWidgets[minIdx]["height"]) {
           myWidgets[currSmall]["color"] = Colors.red;
-          min_idx = j;
-          currSmall = min_idx;
+          minIdx = j;
+          currSmall = minIdx;
           myWidgets[currSmall]["color"] = Colors.deepPurple;
           _pseudoCounter = 4;
           notifyListeners();
@@ -260,12 +258,12 @@ class BarWidgetProvider extends ChangeNotifier {
         }
       }
       myWidgets[currSmall]["color"] = Colors.red;
-      Widget temp = myWidgets[min_idx]["widget"];
-      myWidgets[min_idx]["widget"] = myWidgets[i]["widget"];
+      Widget temp = myWidgets[minIdx]["widget"];
+      myWidgets[minIdx]["widget"] = myWidgets[i]["widget"];
       myWidgets[i]["widget"] = temp;
       //
-      double tempHeight = myWidgets[min_idx]["height"];
-      myWidgets[min_idx]["height"] = myWidgets[i]["height"];
+      double tempHeight = myWidgets[minIdx]["height"];
+      myWidgets[minIdx]["height"] = myWidgets[i]["height"];
       myWidgets[i]["height"] = tempHeight;
       _pseudoCounter = 5;
       notifyListeners();
@@ -349,8 +347,6 @@ class BarWidgetProvider extends ChangeNotifier {
   void _quickSort() async {
     isAlgoRunning = true;
     await _quickSortAlgo(myWidgets, 0, myWidgets.length - 1);
-    isAlgoRunning = false;
-    notifyListeners();
   }
 
   Future<void> _quickSortAlgo(List arr, int low, int high) async {
@@ -362,20 +358,33 @@ class BarWidgetProvider extends ChangeNotifier {
     int e = high;
 
     int mid = s + (e - s) ~/ 2;
+    _pseudoCounter = 1;
+    notifyListeners();
+    await Future.delayed(_speed);
 
     int pivot = arr[mid]["height"];
+    _pseudoCounter = 2;
+    notifyListeners();
+    await Future.delayed(_speed);
 
     while (s <= e) {
+      _pseudoCounter = 3;
+      notifyListeners();
+      await Future.delayed(_speed);
       while (arr[s]["height"] < pivot) {
         s++;
       }
       while (arr[e]["height"] > pivot) {
         e--;
       }
+      _pseudoCounter = 4;
+      notifyListeners();
+      await Future.delayed(_speed);
       if (s <= e) {
         var temp = arr[s];
         arr[s] = arr[e];
         arr[e] = temp;
+        _pseudoCounter = 5;
         notifyListeners();
         await Future.delayed(_speed);
         s++;
@@ -384,8 +393,14 @@ class BarWidgetProvider extends ChangeNotifier {
       notifyListeners();
       await Future.delayed(_speed);
     }
-
+    _pseudoCounter = 6;
+    notifyListeners();
+    await Future.delayed(_speed);
     _quickSortAlgo(arr, low, e);
     _quickSortAlgo(arr, s, high);
+    isAlgoRunning = false;
+    _pseudoCounter = 7;
+    notifyListeners();
+    await Future.delayed(_speed);
   }
 }
