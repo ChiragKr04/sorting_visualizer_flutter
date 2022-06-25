@@ -228,19 +228,37 @@ class BarWidgetProvider extends ChangeNotifier {
   void _selectionSort() async {
     isAlgoRunning = true;
     int n = myWidgets.length;
+    int currSmall = 0;
     for (int i = 0; i < n - 1; i++) {
       int min_idx = i;
+      _pseudoCounter = 1;
+      notifyListeners();
+      await Future.delayed(_speed);
       for (int j = i + 1; j < n; j++) {
-        if (myWidgets[j]["height"] < myWidgets[min_idx]["height"]) {
-          min_idx = j;
-        }
-        myWidgets[i]["color"] = Colors.green;
-        myWidgets[j]["color"] = Colors.green;
-        await Future.delayed(_speed);
-        myWidgets[i]["color"] = Colors.red;
-        myWidgets[j]["color"] = Colors.red;
+        _pseudoCounter = 2;
         notifyListeners();
+        await Future.delayed(_speed);
+        _pseudoCounter = 3;
+        notifyListeners();
+        // await Future.delayed(_speed);
+        if (myWidgets[j]["height"] < myWidgets[min_idx]["height"]) {
+          myWidgets[currSmall]["color"] = Colors.red;
+          min_idx = j;
+          currSmall = min_idx;
+          myWidgets[currSmall]["color"] = Colors.deepPurple;
+          _pseudoCounter = 4;
+          notifyListeners();
+          await Future.delayed(_speed);
+        }
+        if (currSmall != j) {
+          myWidgets[i]["color"] = Colors.green;
+          myWidgets[j]["color"] = Colors.green;
+          notifyListeners();
+          await Future.delayed(_speed);
+          myWidgets[j]["color"] = Colors.red;
+        }
       }
+      myWidgets[currSmall]["color"] = Colors.red;
       Widget temp = myWidgets[min_idx]["widget"];
       myWidgets[min_idx]["widget"] = myWidgets[i]["widget"];
       myWidgets[i]["widget"] = temp;
@@ -248,9 +266,14 @@ class BarWidgetProvider extends ChangeNotifier {
       double tempHeight = myWidgets[min_idx]["height"];
       myWidgets[min_idx]["height"] = myWidgets[i]["height"];
       myWidgets[i]["height"] = tempHeight;
-      await Future.delayed(_speed);
+      _pseudoCounter = 5;
       notifyListeners();
+      await Future.delayed(_speed);
     }
+    for (int i = 0; i < n; i++) {
+      myWidgets[i]["color"] = Colors.green;
+    }
+    _pseudoCounter = 6;
     await Future.delayed(_speed);
     isAlgoRunning = false;
     notifyListeners();

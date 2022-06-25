@@ -51,14 +51,14 @@ class MyHomePage extends StatelessWidget {
                 children: [
                   Text(
                     "Data Length : ${ref.watch(barWidgetNotifierProvider).totalData}",
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
-                  SliderCounter(),
+                  const SliderCounter(),
                   Text(
                     "Speed : ${ref.watch(barWidgetNotifierProvider).calcSpeed} milliseconds",
-                    style: TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.white),
                   ),
-                  SpeedSlider(),
+                  const SpeedSlider(),
                 ],
               ),
             ),
