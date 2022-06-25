@@ -42,7 +42,7 @@ class AlgoConstants {
       "    for i = leftPartIdx to rightPartIdx",
       "        if leftPartHeadValue <= rightPartHeadValue",
       "            copy leftPartHeadValue",
-      "        else: copy rightPartHeadValue; Increase InvIdx",
+      "        else: copy rightPartHeadValue; Increase RightIdx",
       "copy elements back to original array",
       "Sorting Done",
     ],

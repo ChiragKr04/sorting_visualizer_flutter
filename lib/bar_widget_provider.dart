@@ -21,6 +21,7 @@ class BarWidgetProvider extends ChangeNotifier {
 
   void updateAlgoName(int idx) {
     selectedAlgo = idx;
+    _pseudoCounter = 0;
     notifyListeners();
   }
 
@@ -286,6 +287,10 @@ class BarWidgetProvider extends ChangeNotifier {
     isAlgoRunning = true;
     final List copyarr = List.from(myWidgets);
     await _merging(myWidgets, 0, myWidgets.length - 1, copyarr);
+    _pseudoCounter = 7;
+    for (int i = 0; i < copyarr.length; i++) {
+      myWidgets[i]["color"] = Colors.green;
+    }
     isAlgoRunning = false;
     notifyListeners();
   }
@@ -308,23 +313,34 @@ class BarWidgetProvider extends ChangeNotifier {
     _left = start;
     _right = mid + 1;
     int counter = start;
+    _pseudoCounter = 1;
     notifyListeners();
+    await Future.delayed(_speed);
     while (_left <= mid && _right <= end) {
       if (copy[_left]["height"] < copy[_right]["height"]) {
         main[counter++] = copy[_left++];
+        _pseudoCounter = 3;
+        notifyListeners();
+        await Future.delayed(_speed);
+        _pseudoCounter = 4;
+        notifyListeners();
+        await Future.delayed(_speed);
       } else {
         main[counter++] = copy[_right++];
+        _pseudoCounter = 5;
+        notifyListeners();
+        await Future.delayed(_speed);
       }
-      notifyListeners();
-      await Future.delayed(_speed);
     }
     while (_left <= mid) {
       main[counter++] = copy[_left++];
+      _pseudoCounter = 6;
       notifyListeners();
       await Future.delayed(_speed);
     }
     while (_right <= end) {
       main[counter++] = copy[_right++];
+      _pseudoCounter = 6;
       notifyListeners();
       await Future.delayed(_speed);
     }
