@@ -64,7 +64,7 @@ class BarWidgetProvider extends ChangeNotifier {
     }
   }
 
-  int widgetCounts = 20;
+  int widgetCounts = 10;
   void updateWidgetCount(int count) {
     if (count <= 40) {
       _speed = const Duration(
@@ -100,7 +100,7 @@ class BarWidgetProvider extends ChangeNotifier {
           width: (screenWidth.toInt()) / widgetCounts,
           child: Align(
             alignment: Alignment.topCenter,
-            child: widgetCounts < 40
+            child: widgetCounts < 30
                 ? Text(
                     height.toInt().toString(),
                     style: const TextStyle(
@@ -120,6 +120,7 @@ class BarWidgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Bubble sort
   void _bubbleSortAlgo() async {
     isAlgoRunning = true;
     bool needSort = false;
@@ -178,15 +179,29 @@ class BarWidgetProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Insertion Sort
   void _insertionSortAlgo() async {
     isAlgoRunning = true;
     int alen = myWidgets.length;
     for (int i = 1; i < alen; i++) {
+      _pseudoCounter = 1;
+      notifyListeners();
+      await Future.delayed(_speed);
       int j = i;
+      _pseudoCounter = 2;
+      notifyListeners();
+      await Future.delayed(_speed);
+      _pseudoCounter = 3;
+      notifyListeners();
+      await Future.delayed(_speed);
       while (j > 0 && myWidgets[j]["height"] < myWidgets[j - 1]["height"]) {
         Widget temp = myWidgets[j - 1]["widget"];
         myWidgets[j - 1]["color"] = Colors.deepPurple;
         myWidgets[j]["color"] = Colors.orange;
+        _pseudoCounter = 4;
+        notifyListeners();
+        await Future.delayed(_speed);
+        _pseudoCounter = 5;
         notifyListeners();
         await Future.delayed(const Duration(milliseconds: 1));
         myWidgets[j - 1]["widget"] = myWidgets[j]["widget"];
@@ -201,6 +216,9 @@ class BarWidgetProvider extends ChangeNotifier {
         await Future.delayed(_speed);
         notifyListeners();
       }
+      _pseudoCounter = 6;
+      notifyListeners();
+      await Future.delayed(_speed);
     }
     await Future.delayed(_speed);
     for (int i = 0; i < alen; i++) {

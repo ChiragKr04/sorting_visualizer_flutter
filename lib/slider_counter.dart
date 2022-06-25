@@ -10,7 +10,7 @@ class SliderCounter extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<SliderCounter> {
-  double _currentSliderValue = 20;
+  double _currentSliderValue = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +20,9 @@ class _MyStatefulWidgetState extends State<SliderCounter> {
           builder: (context, constraints) {
             return Slider(
               value: _currentSliderValue,
-              max: 200,
-              min: 20,
-              divisions: 12,
-              // divisions: 10,
+              max: 100,
+              min: 10,
+              divisions: 10 % 100,
               label: _currentSliderValue.round().toString(),
               onChanged: (double value) {
                 setState(

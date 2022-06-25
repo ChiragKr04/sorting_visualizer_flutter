@@ -10,6 +10,9 @@ import 'package:sorting_visualizer_flutter/slider_counter.dart';
 
 import 'time_complexity_card.dart';
 
+// Web build command
+// flutter build web --web-renderer html
+
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
