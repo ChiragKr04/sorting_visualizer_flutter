@@ -216,6 +216,7 @@ class BarWidgetProvider extends ChangeNotifier {
       notifyListeners();
       await Future.delayed(_speed);
     }
+    _pseudoCounter = 7;
     await Future.delayed(_speed);
     for (int i = 0; i < alen; i++) {
       myWidgets[i]["color"] = Colors.green;
