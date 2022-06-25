@@ -7,6 +7,7 @@ import 'package:sorting_visualizer_flutter/global_provider.dart';
 import 'package:sorting_visualizer_flutter/my_drawer.dart';
 import 'package:sorting_visualizer_flutter/pseudo_code_card.dart';
 import 'package:sorting_visualizer_flutter/slider_counter.dart';
+import 'package:sorting_visualizer_flutter/speed_slider.dart';
 
 import 'time_complexity_card.dart';
 
@@ -44,9 +45,22 @@ class MyHomePage extends StatelessWidget {
           log("REFRESHED");
           return Scaffold(
             backgroundColor: ConstantColors.blackColor,
-            bottomNavigationBar: const SizedBox(
-              height: 100,
-              child: SliderCounter(),
+            bottomNavigationBar: SizedBox(
+              height: 150,
+              child: Column(
+                children: [
+                  Text(
+                    "Data Length : ${ref.watch(barWidgetNotifierProvider).totalData}",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  SliderCounter(),
+                  Text(
+                    "Speed : ${ref.watch(barWidgetNotifierProvider).calcSpeed} milliseconds",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  SpeedSlider(),
+                ],
+              ),
             ),
             floatingActionButton: FloatingActionButton.extended(
               onPressed: () {

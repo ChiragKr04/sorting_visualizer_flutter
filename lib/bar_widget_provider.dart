@@ -14,7 +14,7 @@ class BarWidgetProvider extends ChangeNotifier {
   int _widgetCounter = 0;
   bool isAlgoRunning = false;
   Duration _speed = const Duration(
-    seconds: 2,
+    milliseconds: 1,
   );
 
   int selectedAlgo = 0;
@@ -64,21 +64,18 @@ class BarWidgetProvider extends ChangeNotifier {
     }
   }
 
+  void updateSpeed(int speed) {
+    _speed = Duration(
+      milliseconds: speed,
+    );
+    notifyListeners();
+  }
+
+  int get calcSpeed => _speed.inMilliseconds;
+  int get totalData => widgetCounts;
+
   int widgetCounts = 10;
   void updateWidgetCount(int count) {
-    if (count <= 40) {
-      _speed = const Duration(
-        seconds: 1,
-      );
-    } else if (count >= 40 && count <= 100) {
-      _speed = const Duration(
-        milliseconds: 60,
-      );
-    } else if (count > 100) {
-      _speed = const Duration(
-        milliseconds: 10,
-      );
-    }
     widgetCounts = count;
     notifyListeners();
   }
@@ -89,7 +86,7 @@ class BarWidgetProvider extends ChangeNotifier {
     _widgetCounter = 0;
     while (_widgetCounter < widgetCounts) {
       dev.log(_widgetCounter.toString());
-      await Future.delayed(const Duration(milliseconds: 50));
+      await Future.delayed(_speed);
       _widgetCounter++;
       double height = Random().nextInt(screenWidth ~/ 2) + 20;
       dev.log("height $height");
@@ -203,7 +200,7 @@ class BarWidgetProvider extends ChangeNotifier {
         await Future.delayed(_speed);
         _pseudoCounter = 5;
         notifyListeners();
-        await Future.delayed(const Duration(milliseconds: 1));
+        await Future.delayed(_speed);
         myWidgets[j - 1]["widget"] = myWidgets[j]["widget"];
         myWidgets[j]["widget"] = temp;
         myWidgets[j]["color"] = Colors.green;
