@@ -1,15 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sorting_visualizer_flutter/constant_colors.dart';
-import 'package:sorting_visualizer_flutter/global_provider.dart';
-import 'package:sorting_visualizer_flutter/my_drawer.dart';
-import 'package:sorting_visualizer_flutter/pseudo_code_card.dart';
-import 'package:sorting_visualizer_flutter/slider_counter.dart';
-import 'package:sorting_visualizer_flutter/speed_slider.dart';
-
-import 'time_complexity_card.dart';
+import 'package:sorting_visualizer_flutter/path_finding_visualizer/grid/grid.dart';
+import 'package:sorting_visualizer_flutter/sorting_visualizer/constants/constant_colors.dart';
+import 'package:sorting_visualizer_flutter/sorting_visualizer/widgets/sortingWidget.dart';
 
 // Web build command
 // flutter build web --web-renderer html
@@ -23,134 +16,146 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return NotificationListener<SizeChangedLayoutNotification>(
+      onNotification: ((notification) {
+        build(context);
+        return true;
+      }),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: const MainBuilder(),
       ),
-      debugShowCheckedModeBanner: false,
-      home: const MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class MainBuilder extends StatefulWidget {
+  const MainBuilder({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<MainBuilder> createState() => _MainBuilderState();
+}
+
+class _MainBuilderState extends State<MainBuilder> {
+  bool isNavigatingS = false;
+  bool isNavigatingP = false;
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Consumer(
-        builder: (context, ref, child) {
-          final barWidgetProvider = ref.watch(barWidgetNotifierProvider);
-          log("REFRESHED");
-          return Scaffold(
-            backgroundColor: ConstantColors.blackColor,
-            bottomNavigationBar: SizedBox(
-              height: 150,
-              child: Column(
-                children: [
-                  Text(
-                    "Data Length : ${ref.watch(barWidgetNotifierProvider).totalData}",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  const SliderCounter(),
-                  Text(
-                    "Speed : ${ref.watch(barWidgetNotifierProvider).calcSpeed} milliseconds",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  const SpeedSlider(),
-                ],
+    return Builder(builder: (context) {
+      var size = MediaQuery.of(context).size;
+      return Scaffold(
+        backgroundColor: ConstantColors.blackColor,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                "images/sorting_icon.png",
+                height: size.height * 0.2,
+                width: size.height * 0.2,
               ),
-            ),
-            floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                ref.read(barWidgetNotifierProvider.notifier).algoRunner();
-              },
-              label: const Text(
-                'Run Algorithm',
+              const Text(
+                "Algorithm Visualizer",
+                style: TextStyle(
+                  fontSize: 48,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-              icon: const Icon(
-                Icons.play_arrow_rounded,
-              ),
-            ),
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(
-                ref
-                    .watch(barWidgetNotifierProvider)
-                    .getCurrentAlgoName()["name"],
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    ref.read(barWidgetNotifierProvider.notifier).updateBarData(
-                          MediaQuery.of(context).size.width * 0.60,
-                        );
-                  },
-                  icon: const Icon(
-                    Icons.refresh,
-                  ),
-                )
-              ],
-            ),
-            drawer: const MyDrawer(),
-            body: Column(
-              children: [
-                Stack(
+              Padding(
+                padding: EdgeInsets.only(top: size.height * 0.05),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    RotatedBox(
-                      quarterTurns: 0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (int i = 0;
-                              i < barWidgetProvider.myWidgets.length;
-                              i++)
-                            AnimatedContainer(
-                              duration: const Duration(seconds: 1),
-                              curve: Curves.easeInOut,
-                              child: ColoredBox(
-                                color: barWidgetProvider.myWidgets[i]["color"],
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: barWidgetProvider.myWidgets[i]
-                                      ["widget"] as Widget,
+                    SizedBox(
+                      height: size.height * 0.1,
+                      width: size.width * 0.2,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          setState(() {
+                            isNavigatingS = true;
+                          });
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SortingVisualizer(),
+                            ),
+                          );
+                          setState(() {
+                            isNavigatingS = false;
+                          });
+                        },
+                        child: isNavigatingS
+                            ? const CircularProgressIndicator()
+                            : const Text(
+                                "Sorting Visualizer",
+                                style: TextStyle(
+                                  fontSize: 24,
                                 ),
                               ),
-                            ),
-                        ],
                       ),
                     ),
-                    TimeComplexityCard(
-                      width: constraints.maxWidth * 0.20,
-                    ),
-                    PseudoCodeCard(
-                      width: constraints.maxWidth * 0.20,
-                      height: constraints.maxHeight * 0.5,
+                    SizedBox(
+                      height: size.height * 0.1,
+                      width: size.width * 0.2,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          setState(() {
+                            isNavigatingP = true;
+                          });
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const PathFindingVisualizer(),
+                            ),
+                          );
+                          setState(() {
+                            isNavigatingP = false;
+                          });
+                        },
+                        child: isNavigatingP
+                            ? const CircularProgressIndicator()
+                            : const Text(
+                                "Path Finding Visualizer",
+                                style: TextStyle(
+                                  fontSize: 24,
+                                ),
+                              ),
+                      ),
                     ),
                   ],
                 ),
-                Expanded(
-                  child: Center(
-                    child: Icon(
-                      Icons.radio_button_unchecked_rounded,
-                      color: ref.watch(barWidgetNotifierProvider).isAlgoRunning
-                          ? Colors.green
-                          : Colors.red,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+            ],
+          ),
+        ),
       );
     });
+  }
+}
+
+class PathFindingVisualizer extends StatelessWidget {
+  const PathFindingVisualizer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GridWidget();
+  }
+}
+
+class SortingVisualizer extends StatelessWidget {
+  const SortingVisualizer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const SortingWidget();
   }
 }
